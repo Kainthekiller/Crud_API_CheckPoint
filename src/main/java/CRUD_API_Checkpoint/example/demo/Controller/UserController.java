@@ -78,4 +78,18 @@ public class UserController {
         }
     }
 
+
+    //Authenticate
+
+    @PostMapping("/authenticate")
+    public Object authenticateUser(@RequestParam String email, @RequestParam String password)
+    {
+        //We need to find the user and then check if the password matches so we can authenticate
+
+
+
+        return userRepo.findByEmailAndPassword(email,password);
+    }
+
+
 }
