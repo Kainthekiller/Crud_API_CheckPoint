@@ -1,6 +1,7 @@
 package CRUD_API_Checkpoint.example.demo.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
@@ -8,8 +9,6 @@ import javax.persistence.*;
 @Table(name = "username")
 public class User {
 
-    //
-    Boolean authenticated = false; // Mite not stay
 
 
 
@@ -22,16 +21,8 @@ public class User {
 
     String email;
 
-    @JsonIgnore
+
     String password;
-
-    public Boolean getAuthenticated() {
-        return authenticated;
-    }
-
-    public void setAuthenticated(Boolean authenticated) {
-        this.authenticated = authenticated;
-    }
 
     public Long getId() {
         return id;
@@ -49,9 +40,11 @@ public class User {
         this.email = email;
     }
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getPassword() {
         return password;
     }
+
 
     public void setPassword(String password) {
         this.password = password;

@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface UserRepo extends CrudRepository<User, Long> {
 
-    List<User> findByEmailAndPassword(String emailAddress, String password);
+    User findByEmail(String email);
 
 }

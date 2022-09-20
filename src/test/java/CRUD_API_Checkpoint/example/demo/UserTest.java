@@ -1,10 +1,12 @@
 package CRUD_API_Checkpoint.example.demo;
 
+import CRUD_API_Checkpoint.example.demo.Model.Authenticated;
 import CRUD_API_Checkpoint.example.demo.Model.User;
 import CRUD_API_Checkpoint.example.demo.Repo.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +18,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.transaction.Transactional;
 
+
+import java.util.concurrent.ExecutionException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -136,11 +140,44 @@ public class UserTest {
         this.mvc.perform(request)
                 .andExpect(status().isOk());
 
-
-
-
     }
 
+    @Test
+    @Transactional
+    @Rollback
+    public void testAuthentication() throws Exception {
+        User dummyUser = new User();
+        dummyUser.setPassword("wrong");
+        dummyUser.setEmail("billy@example.com");
+        this.testUserRepo.save(user1);
+        this.testUserRepo.save(dummyUser);
+        MockHttpServletRequestBuilder request = post("/users/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+            {   "id": null,
+                "email": "john@example.com",
+                "password": "something-secret"
+             }
+""");
+
+        this.mvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user.email").value("john@example.com"))
+                .andExpect(jsonPath("$.authenticated").value(true));
+
+        MockHttpServletRequestBuilder badRequest = post("/users/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""      
+            {
+                "email": "john@example.com",
+               "password": "wrong"
+             }
+""");
+
+        this.mvc.perform(badRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.authenticated").value(false));
+    }
 
 
 

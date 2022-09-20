@@ -1,5 +1,6 @@
 package CRUD_API_Checkpoint.example.demo.Controller;
 
+import CRUD_API_Checkpoint.example.demo.Model.Authenticated;
 import CRUD_API_Checkpoint.example.demo.Model.User;
 import CRUD_API_Checkpoint.example.demo.Repo.UserRepo;
 import org.springframework.http.HttpStatus;
@@ -82,13 +83,14 @@ public class UserController {
     //Authenticate
 
     @PostMapping("/authenticate")
-    public Object authenticateUser(@RequestParam String email, @RequestParam String password)
+    public Object authenticateUser(@RequestBody User user)
     {
         //We need to find the user and then check if the password matches so we can authenticate
+        User oldUser = this.userRepo.findByEmail(user.getEmail());
+        if (oldUser.getPassword().equals(user.getPassword())){
+            return new Authenticated(true, oldUser);
+        } return new Authenticated(false);
 
-
-
-        return userRepo.findByEmailAndPassword(email,password);
     }
 
 
